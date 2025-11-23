@@ -1,0 +1,1403 @@
+<div class="container-fluid simulator-container py-4">
+ <div class="top-heading" [class.show-back]="showPreviewPanel">
+  <img src="assets/images/arrow.png" class="title-back-icon" (click)="showPreviewPanel = false" />
+  <h2 class="simulator-title">Campaign Simulator</h2>
+  <span></span>
+</div>
+
+  <div class="simulator-content row">
+    <div class="col-md-3 left-panel mobile-form-container" [class.hidden]="showPreviewPanel">
+      <form #campaignForm="ngForm" (ngSubmit)="generateCampaign(campaignForm)" novalidate>
+        <!-- Name -->
+        <div class="form-group">
+          <label class="inline-label">Name</label>
+          <input
+            type="text"
+            name="name"
+            ngModel
+            #nameInput="ngModel"
+            class="form-control"
+            placeholder="Enter Name"
+             />
+          <div
+            *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched || campaignForm.submitted)"
+            class="text-danger small">
+            Name is required.
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="inline-label">Email</label>
+          <input
+            type="email"
+            name="email"
+            ngModel
+            #emailInput="ngModel"
+            pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
+            class="form-control"
+            
+            placeholder="Enter Email" />
+          <div
+            *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched || campaignForm.submitted)"
+            class="text-danger small">
+            <span *ngIf="emailInput.errors?.required">Email is required.</span>
+            <span *ngIf="emailInput.errors?.pattern">Invalid email format.</span>
+          </div>
+        </div>
+
+        <!-- Mobile -->
+        <div class="form-group">
+          <label class="inline-label">Mobile No.</label>
+          <input
+            type="text"
+            name="mobile"
+            ngModel
+            #mobileInput="ngModel"
+            minlength="10"
+            maxlength="10"
+            (keydown)="allowOnlyNumbers($event)"
+            class="form-control"
+            placeholder="Enter Mobile Number" />
+          <div
+            *ngIf="mobileInput.invalid && (mobileInput.dirty || mobileInput.touched || campaignForm.submitted)"
+            class="text-danger small">
+            <span *ngIf="mobileInput.errors?.required">Mobile number is required.</span>
+            <span *ngIf="mobileInput.errors?.minlength || mobileInput.errors?.maxlength">
+              Mobile number must be 10 digits.
+            </span>
+          </div>
+        </div>
+
+        <!-- ZIP -->
+        <div class="form-group">
+          <label class="inline-label">Postal Code</label>
+          <input
+            type="text"
+            name="zipCode"
+            [ngModel]="zipCode"
+            #zipInput="ngModel"
+            minlength="6"
+            maxlength="6"
+            (keydown)="allowOnlyNumbers($event)"
+            class="form-control"
+            required
+            placeholder="Enter Postal Code" />
+          <div
+            *ngIf="zipInput.invalid && (zipInput.dirty || zipInput.touched || campaignForm.submitted)"
+            class="text-danger small">
+            <span *ngIf="zipInput.errors?.required">ZIP code is required.</span>
+            <span *ngIf="zipInput.errors?.minlength || zipInput.errors?.maxlength">ZIP code must be 6 digits.</span>
+          </div>
+        </div>
+
+        <!-- Loyalty Level -->
+        <div class="form-group">
+          <label>Loyalty Level</label>
+          <select name="persona" [ngModel]="persona" class="form-control">
+            <option>Silver Level Member</option>
+            <option>Gold Level Member</option>
+          </select>
+        </div>
+
+        <!-- Category -->
+        <div class="form-group">
+          <label>Category</label>
+          <select name="category" [ngModel]="category" class="form-control">
+            <option value="Fashion">Fashion</option>
+            <option value="Grocery">Grocery</option>
+          </select>
+        </div>
+
+        <!-- Features -->
+        <div class="form-group">
+          <div class="features-list" *ngIf="featureList">
+            <label>Features List</label>
+            <div class="checkbox-group">
+              <label>
+                <input type="checkbox" name="loyaltyPoints" [ngModel]="features.loyalty" class="form-check-input" />
+                <span>Loyalty Points</span>
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  name="location"
+                  [ngModel]="features.location"
+                  class="form-check-input"
+                  [disabled]="zipCode == ''" />
+                <span>Location</span>
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  name="personalizedOffers"
+                  [ngModel]="features.personalizedOffers"
+                  class="form-check-input" />
+                <span>Personalized Offers</span>
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  name="productReco"
+                  [ngModel]="features.productRecommendations"
+                  class="form-check-input" />
+                <span>Product Recommendations</span>
+              </label>
+              <label *ngIf="category == 'Fashion'">
+                <input type="checkbox" name="aiStylist" [ngModel]="features.aiStylist" class="form-check-input" />
+                <span>AI Stylist</span>
+              </label>
+            </div>
+          </div>
+          <button type="submit" class="generate-btn">Generate</button>
+        </div>
+
+        
+      </form>
+    </div>
+<div class="col-md-9 rightPanel mobile-preview-container" [class.visible]="showPreviewPanel">  
+   <!-- Right Preview -->
+      <div class="preview-panel">
+        <div class="nav nav-tabs">
+          <li class="nav-item" *ngFor="let tab of tabs">
+            <a
+              class="nav-link"
+              [ngClass]="{ active: activeTab === tab.id }"
+              (click)="setTab(tab.id)"
+              href="javascript:void(0)">
+              <img
+                (click)="setTab(tab)"
+                class="nav-link"
+                [ngClass]="{ active: activeTab === tab.id }"
+                src="assets/images/{{ tab.id }}.svg" />
+              <span>{{ tab.displayName }}</span>
+            </a>
+          </li>
+        </div>
+        <div *ngIf="activeTab == 'email'" class="email-panel">
+          <div *ngIf="persona === 'Silver Level Member'">
+            <div *ngIf="category === 'Fashion'" class="fashion-panel">
+              <div class="preview-content">
+                <div class="email-banner same-style">
+                  <div class="email-right">
+                    <img
+                      *ngIf="features.personalizedOffers"
+                      src="assets/images/pink_posing_girl2.png"
+                      alt="Pink posing girl" />
+                    <img
+                      *ngIf="!features.personalizedOffers"
+                      src="assets/images/pink_posing_girl1.png"
+                      alt="Pink posing girl" />
+
+                    <!-- LEFT: Logo + Text -->
+                    <div class="email-left">
+                      <div class="sorrento-logo" *ngIf="features.personalizedOffers">
+                        <img class="logo" src="assets/images/sorrento.png" alt="SORRENTO" />
+                      </div>
+                      <div class="logo-text">
+                        <h1>Hi {{ name || "" }},</h1>
+                        <p>
+                          you have some Lovely Picks
+                          <br />
+                          Left Behind.
+                        </p>
+                      </div>
+                    </div>
+
+                    <!-- Discount circle inside image -->
+                    <div class="discount-circle" *ngIf="features.personalizedOffers">
+                      <span class="exclusive-text">Exclusive</span>
+                      <h2>15%</h2>
+                      <p>Discount For You</p>
+                      <button class="discount-code">BUYNOW15</button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Rewards Section -->
+                <div class="rewards-panel" *ngIf="features.loyalty">
+                  <div class="rewards-left">
+                    <img src="assets/images/crown-icon.png" alt="Crown" class="rewards-icon" />
+                    <div>
+                      <img src="assets/images/Sorrentorewards.png" alt="loyalty rewards" class="sorrento-rewards" />
+                      <img src="assets/images/Group.png" alt="groupicon" class="group-icon" />
+                    </div>
+                  </div>
+
+                  <div class="rewards-right">
+                    <span class="points-pill">350/500</span>
+                    <p>
+                      You are only
+                      <span class="highlight">
+                        150 point
+                        <br />
+                      </span>
+                      away from
+                      <span class="gold-text">Gold level</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div class="product-wrapper">
+                  <p class="greetingtext">Still Interested ? Don’t leave this behind!</p>
+                  <div class="product-card">
+                    <div class="product-image">
+                      <img src="assets/images/sportsshoe.png" alt="Classic beige coat" />
+                      <div class="best-seller">
+                        <img src="assets/images/fire.png" alt="vector fire icon" />
+                        <span>Best Seller</span>
+                      </div>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="product-details">
+                      <h2 class="product-title">Radiant Koral Knit Sneakers</h2>
+
+                      <div class="recent-purchases">
+                        <img src="assets/images/up-arrow.png" alt="arrow" />
+                        <span>86 People Bought Recently</span>
+                      </div>
+                      <hr />
+
+                      <div class="reviews">
+                        <span class="rating">4.9</span>
+                        <img src="assets/images/star.png" alt="star" />
+                        <span class="separator">|</span>
+                        <span class="review-count">318 Reviews</span>
+                      </div>
+
+                      <div class="price-stock">
+                        <span class="price">$319.99</span>
+                        <span class="stock">Only 6 left in stock</span>
+                      </div>
+
+                      <button class="buy-now" [class.clicked]="isClicked" (click)="isClicked = !isClicked">
+                        Buy Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- New Section: Get the Complete Outfit -->
+                <div class="complete-outfit" *ngIf="features.aiStylist">
+                  <h2 class="outfit-title">Get the Complete outfit</h2>
+                  <div class="outfit-container">
+                    <div class="outfit-item">
+                      <img src="assets/images/Groupoutfits.png" alt="Outfit Option 1" />
+                      <button class="outfit-btn">Get the Look</button>
+                    </div>
+                    <div class="outfit-item">
+                      <img src="assets/images/Groupoutfits 2.png" alt="Outfit Option 2" />
+                      <button class="outfit-btn">Get the Look</button>
+                    </div>
+                  </div>
+                </div>
+             
+              <!-- Our Recommendation Section -->
+              <div class="recommendation-wrapper" *ngIf="features.productRecommendations">
+                <div class="recommendations">
+                  <h2 class="recommend-title">Our Recommendation</h2>
+
+                  <!-- First Product -->
+                  <div class="recommend-card">
+                    <div class="recommend-image">
+                      <img src="assets/images/blueshoe.png" alt="Luxe Tailored Blazer" />
+                    </div>
+                    <div class="recommend-details">
+                      <h3 class="product-name">Aqua Dash Runner</h3>
+                      <p class="rating">
+                        4.7
+                        <span class="star">★</span>
+                        | 210 Ratings
+                      </p>
+                      <hr />
+                      <p class="price">$139.99</p>
+                      <p class="tax-text">Inclusive of all taxes</p>
+                      <button class="buy-btn">Buy Now</button>
+                    </div>
+                  </div>
+
+                  <!-- Second Product -->
+                  <div class="recommend-card">
+                    <div class="recommend-image">
+                      <img src="assets/images/blackshoe.png" alt="Elegant Structured Blazer" />
+                    </div>
+                    <div class="recommend-details">
+                      <h3 class="product-name">Phantom Edge Trainer</h3>
+                      <p class="rating">
+                        4.1
+                        <span class="star">★</span>
+                        | 116 Ratings
+                      </p>
+                      <hr />
+                      <p class="price">$179.99</p>
+                      <p class="tax-text">Inclusive of all taxes</p>
+                      <button class="buy-btn">Buy Now</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Locate Us Section -->
+              <div class="store-locate" *ngIf="features.location && zipCode != ''">
+                <div class="store-info">
+                  <div class="store-header">
+                    <img src="assets/images/store-icon.png" alt="Store Icon" class="icon" />
+                    <p>
+                      Checkout our store at
+                      <br />
+                      <span class="highlight">{{ city }}</span>
+                      <br />
+                      near you
+                    </p>
+                  </div>
+                  <div class="store-address">
+                    <img src="assets/images/location-icon.png" alt="Location Icon" class="icon" />
+                    <p>{{ state }}</p>
+                  </div>
+                </div>
+
+                <div class="store-map">
+                  <iframe
+                    [src]="mapUrl | safeUrl"
+                    width="100%"
+                    height="300"
+                    style="border: 0"
+                    allowfullscreen
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+              </div>
+              <!-- CLOSE store-locate here -->
+
+              <!-- White Banner -->
+              <div class="white-banner">
+                <div class="inner">
+                  <div class="sorrento-logo">
+                    <img src="assets/images/sorrento.png" alt="sorrento" class="icon" />
+                  </div>
+                  <div class="banner-social">
+                    <span>Follow us on</span>
+                    <a href="#"><img src="assets/images/twitter-alt.png" alt="X" /></a>
+                    <a href="#"><img src="assets/images/facebook.png" alt="Facebook" /></a>
+                    <a href="#"><img src="assets/images/instagram.png" alt="Facebook" /></a>
+                  </div>
+                  <div class="banner-unsubscribe">
+                    <a href="#">Unsubscribe</a>
+                  </div>
+                </div>
+              </div>
+              </div>
+            </div>
+
+            <!-- SILVER LEVEL Grocery Section -->
+            <div *ngIf="isGrocerySelected()" class="grocery-banner">
+              <div class="preview-content">
+                <div class="email-banner same-style">
+                  <div class="email-right">
+                    <img
+                      *ngIf="!features.personalizedOffers"
+                      src="assets/images/pinkgroceryimage1.png"
+                      alt="Pink posing girl" />
+                    <img
+                      *ngIf="features.personalizedOffers"
+                      src="assets/images/pinkgroceryimage2.png"
+                      alt="Pink posing girl" />
+
+                    <!-- LEFT: Logo + Text -->
+                    <div class="email-left">
+                      <div class="sorrento-logo">
+                        <img class="logo" src="assets/images/sorrento.png" alt="SORRENTO" />
+                      </div>
+                      <div class="logo-text">
+                        <h1>Hi {{ name || "" }},</h1>
+                        <p>
+                          you have some Lovely Picks
+                          <br />
+                          Left Behind.
+                        </p>
+                      </div>
+                    </div>
+
+                    <!-- Discount circle inside image -->
+                    <div class="discount-circle" *ngIf="features.personalizedOffers">
+                      <span class="exclusive-text">Exclusive</span>
+                      <h2>15%</h2>
+                      <p>Discount For You</p>
+                      <button class="discount-code">BUYNOW15</button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Rewards Section -->
+                <div class="rewards-panel" *ngIf="features.loyalty">
+                  <div class="rewards-left">
+                    <img src="assets/images/crown-icon.png" alt="Crown" class="rewards-icon" />
+                    <div>
+                      <img src="assets/images/Sorrentorewards.png" alt="loyalty rewards" class="sorrento-rewards" />
+                      <img src="assets/images/Group.png" alt="groupicon" class="group-icon" />
+                    </div>
+                  </div>
+
+                  <div class="rewards-right">
+                    <span class="points-pill">350/500</span>
+                    <p>
+                      You are only
+                      <span class="highlight">
+                        150 point
+                        <br />
+                      </span>
+                      away from
+                      <span class="gold-text">Gold level</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div class="gold-product-wrapper">
+                  <p class="greetingtext">You have left this in your Cart!</p>
+                  <div class="product-card">
+                    <div class="product-image">
+                      <img src="assets/images/peanutbutter.png" alt="Peanut butter" />
+                      <div class="best-seller">
+                        <img src="assets/images/Vector.png" alt="vector fire icon" />
+                        <span>Best Seller</span>
+                      </div>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="product-details">
+                      <h2 class="product-title">Natural Crunchy Peanut Butter</h2>
+
+                      <div class="recent-purchases">
+                        <img src="assets/images/up-arrow.png" alt="arrow" />
+                        <span>86 People Bought Recently</span>
+                      </div>
+                      <hr />
+
+                      <div class="reviews">
+                        <span class="rating">4.9</span>
+                        <img src="assets/images/star.png" alt="star" />
+                        <span class="separator">|</span>
+                        <span class="review-count">318 Reviews</span>
+                      </div>
+
+                      <div class="price-stock">
+                        <span class="price">$10.99</span>
+                        <span class="stock">12 available</span>
+                      </div>
+
+                      <button class="buy-now" [class.clicked]="isClicked" (click)="isClicked = !isClicked">
+                        Buy Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              
+
+              <!-- Our Recommendation Section -->
+              <div class="gold-recommendation-wrapper" *ngIf="features.productRecommendations">
+                <div class="gold-recommendations">
+                  <h2 class="recommend-title">Our Recommendation</h2>
+
+                  <!-- First Product -->
+                  <div class="recommend-card">
+                    <div class="recommend-image">
+                      <img src="assets/images/cocoapowder.png" alt="Cocoa powder" />
+                    </div>
+                    <div class="recommend-details">
+                      <h3 class="product-name">Unsweetened Cocoa Powder</h3>
+                      <p class="rating">
+                        4.7
+                        <span class="star">★</span>
+                        | 210 Ratings
+                      </p>
+                      <hr />
+                      <br />
+                      <p class="price">$5.99</p>
+                      <p class="tax-text">Inclusive of all taxes</p>
+                      <button class="buy-btn">Buy Now</button>
+                    </div>
+                  </div>
+
+                  <!-- Second Product -->
+                  <div class="recommend-card">
+                    <div class="recommend-image">
+                      <img src="assets/images/Oats.jpg" alt="Oats" />
+                    </div>
+                    <div class="recommend-details">
+                      <h3 class="product-name"> High Protein Instant Oats</h3>
+                      <p class="rating">
+                        4.1
+                        <span class="star">★</span>
+                        | 116 Ratings
+                      </p>
+                      <hr />
+                      <br />
+                      <p class="price">$2.99</p>
+                      <p class="tax-text">Inclusive of all taxes</p>
+                      <button class="buy-btn">Buy Now</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Locate Us Section -->
+              <div class="store-locate" *ngIf="features.location && zipCode != ''">
+                <div class="store-info">
+                  <div class="store-header">
+                    <img src="assets/images/store-icon.png" alt="Store Icon" class="icon" />
+                    <p>
+                      Checkout our store at
+                      <br />
+                      <span class="highlight">{{ city }}</span>
+                      <br />
+                      near you
+                    </p>
+                  </div>
+                  <div class="store-address">
+                    <img src="assets/images/location-icon.png" alt="Location Icon" class="icon" />
+                    <p>{{ state }}</p>
+                  </div>
+                </div>
+
+                <div class="store-map">
+                  <iframe
+                    [src]="mapUrl | safeUrl"
+                    width="100%"
+                    height="300"
+                    style="border: 0"
+                    allowfullscreen
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+              </div>
+              <!-- CLOSE store-locate here -->
+
+              <!-- White Banner -->
+              <div class="white-banner">
+                <div class="inner">
+                  <div class="sorrento-logo">
+                    <img src="assets/images/sorrento.png" alt="sorrento" class="icon" />
+                  </div>
+                  <div class="banner-social">
+                    <span>Follow us on</span>
+                    <a href="#"><img src="assets/images/twitter-alt.png" alt="X" /></a>
+                    <a href="#"><img src="assets/images/facebook.png" alt="Facebook" /></a>
+                    <a href="#"><img src="assets/images/instagram.png" alt="Facebook" /></a>
+                  </div>
+                  <div class="banner-unsubscribe">
+                    <a href="#">Unsubscribe</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+
+          <div *ngIf="persona === 'Gold Level Member'">
+            <div *ngIf="category === 'Fashion'" class="fashion-panel">
+              <div class="preview-content">
+                <div class="email-banner same-style">
+                  <div class="email-right">
+                    <img
+                      *ngIf="features.personalizedOffers"
+                      src="assets/images/pink_posing_girl2.png"
+                      alt="Pink posing girl" />
+                    <img
+                      *ngIf="!features.personalizedOffers"
+                      src="assets/images/pink_posing_girl1.png"
+                      alt="Pink posing girl" />
+
+                    <!-- LEFT: Logo + Text -->
+                    <div class="email-left">
+                      <div class="sorrento-logo" *ngIf="features.personalizedOffers">
+                        <img class="logo" src="assets/images/sorrento.png" alt="SORRENTO" />
+                      </div>
+                      <div class="logo-text">
+                        <h1>Hi {{ name || "" }},</h1>
+                        <p>
+                          you have some Lovely Picks
+                          <br />
+                          Left Behind.
+                        </p>
+                      </div>
+                    </div>
+
+                    <!-- Discount circle inside image -->
+                    <div class="discount-circle" *ngIf="features.personalizedOffers">
+                      <span class="exclusive-text">Exclusive</span>
+                      <h2>15%</h2>
+                      <p>Discount For You</p>
+                      <button class="discount-code">BUYNOW15</button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Rewards Section -->
+                <div class="rewards-panel" *ngIf="features.loyalty">
+                  <div class="rewards-left">
+                    <img src="assets/images/gold crown.png" alt="Crown" class="rewards-icon" />
+                    <div>
+                      <img src="assets/images/goldrewards.png" alt="loyalty rewards" class="sorrento-rewards" />
+                      <img src="assets/images/goldgroup.png" alt="groupicon" class="group-icon" />
+                    </div>
+                  </div>
+
+                  <div class="gold-rewards-right">
+                    <span class="points-pill">650</span>
+                    <p>
+                      Your points are worth
+                      <span class="highlight">$65</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div class="product-wrapper">
+                  <p class="greetingtext">Still Interested ? Don’t leave this behind!</p>
+                  <div class="product-card">
+                    <div class="product-image">
+                      <img src="assets/images/sportsshoe.png" alt="Classic beige coat" />
+                      <div class="best-seller">
+                        <img src="assets/images/fire.png" alt="vector fire icon" />
+                        <span>Best Seller</span>
+                      </div>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="product-details">
+                      <h2 class="product-title">Radiant Koral Knit Sneakers</h2>
+
+                      <div class="recent-purchases">
+                        <img src="assets/images/up-arrow.png" alt="arrow" />
+                        <span>86 People Bought Recently</span>
+                      </div>
+                      <hr />
+
+                      <div class="reviews">
+                        <span class="rating">4.9</span>
+                        <img src="assets/images/star.png" alt="star" />
+                        <span class="separator">|</span>
+                        <span class="review-count">318 Reviews</span>
+                      </div>
+
+                      <div class="price-stock">
+                        <span class="price">$319.99</span>
+                        <span class="stock">Only 6 left in stock</span>
+                      </div>
+
+                      <button class="buy-now" [class.clicked]="isClicked" (click)="isClicked = !isClicked">
+                        Buy Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- New Section: Get the Complete Outfit -->
+                <div class="complete-outfit" *ngIf="features.aiStylist">
+                  <h2 class="outfit-title">Get the Complete outfit</h2>
+                  <div class="outfit-container">
+                    <div class="outfit-item">
+                      <img src="assets/images/Groupoutfits.png" alt="Outfit Option 1" />
+                      <button class="outfit-btn">Get the Look</button>
+                    </div>
+                    <div class="outfit-item">
+                      <img src="assets/images/Groupoutfits 2.png" alt="Outfit Option 2" />
+                      <button class="outfit-btn">Get the Look</button>
+                    </div>
+                  </div>
+                </div>
+              
+              <!-- Our Recommendation Section -->
+              <div class="recommendation-wrapper" *ngIf="features.productRecommendations">
+                <div class="recommendations">
+                  <h2 class="recommend-title">Our Recommendation</h2>
+
+                  <!-- First Product -->
+                  <div class="recommend-card">
+                    <div class="recommend-image">
+                      <img src="assets/images/blueshoe.png" alt="Luxe Tailored Blazer" />
+                    </div>
+                    <div class="recommend-details">
+                      <h3 class="product-name">Aqua Dash Runner</h3>
+                      <p class="rating">
+                        4.7
+                        <span class="star">★</span>
+                        | 210 Ratings
+                      </p>
+                      <hr />
+                      <p class="price">$139.99</p>
+                      <p class="tax-text">Inclusive of all taxes</p>
+                      <button class="buy-btn">Buy Now</button>
+                    </div>
+                  </div>
+
+                  <!-- Second Product -->
+                  <div class="recommend-card">
+                    <div class="recommend-image">
+                      <img src="assets/images/blackshoe.png" alt="Elegant Structured Blazer" />
+                    </div>
+                    <div class="recommend-details">
+                      <h3 class="product-name">Phantom Edge Trainer</h3>
+                      <p class="rating">
+                        4.1
+                        <span class="star">★</span>
+                        | 116 Ratings
+                      </p>
+                      <hr />
+                      <p class="price">$179.99</p>
+                      <p class="tax-text">Inclusive of all taxes</p>
+                      <button class="buy-btn">Buy Now</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Locate Us Section -->
+              <div class="store-locate" *ngIf="features.location && zipCode != ''">
+                <div class="store-info">
+                  <div class="store-header">
+                    <img src="assets/images/store-icon.png" alt="Store Icon" class="icon" />
+                    <p>
+                      Checkout our store at
+                      <br />
+                      <span class="highlight">{{ city }}</span>
+                      <br />
+                      near you
+                    </p>
+                  </div>
+                  <div class="store-address">
+                    <img src="assets/images/location-icon.png" alt="Location Icon" class="icon" />
+                    <p>{{ state }}</p>
+                  </div>
+                </div>
+
+                <div class="store-map">
+                  <iframe
+                    [src]="mapUrl | safeUrl"
+                    width="100%"
+                    height="300"
+                    style="border: 0"
+                    allowfullscreen
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+              </div>
+              <!-- CLOSE store-locate here -->
+
+              <!-- White Banner -->
+              <div class="white-banner">
+                <div class="inner">
+                  <div class="sorrento-logo">
+                    <img src="assets/images/sorrento.png" alt="sorrento" class="icon" />
+                  </div>
+                  <div class="banner-social">
+                    <span>Follow us on</span>
+                    <a href="#"><img src="assets/images/twitter-alt.png" alt="X" /></a>
+                    <a href="#"><img src="assets/images/facebook.png" alt="Facebook" /></a>
+                    <a href="#"><img src="assets/images/instagram.png" alt="Facebook" /></a>
+                  </div>
+                  <div class="banner-unsubscribe">
+                    <a href="#">Unsubscribe</a>
+                  </div>
+                </div>
+              </div>
+              </div>
+            </div>
+            <!--END OF GOLD FASHION Section -->
+
+            <!-- GOLD Grocery Section -->
+            <div *ngIf="persona === 'Gold Level Member'">
+              <div *ngIf="category === 'Grocery'" class="grocery-panel">
+                <div class="preview-content">
+                  <div class="email-banner same-style">
+                    <div class="email-right">
+                      <img
+                        *ngIf="!features.personalizedOffers"
+                        src="assets/images/pinkgroceryimage1.png"
+                        alt="Pink posing girl" />
+                      <img
+                        *ngIf="features.personalizedOffers"
+                        src="assets/images/pinkgroceryimage2.png"
+                        alt="Pink posing girl" />
+
+                      <!-- LEFT: Logo + Text -->
+                      <div class="email-left">
+                        <div class="sorrento-logo">
+                          <img class="logo" src="assets/images/sorrento.png" alt="SORRENTO" />
+                        </div>
+                        <div class="logo-text">
+                          <h1>Hi {{ name || "" }},</h1>
+                          <p>
+                            you have some Lovely Picks
+                            <br />
+                            Left Behind.
+                          </p>
+                        </div>
+                      </div>
+
+                      <!-- Discount circle inside image -->
+                      <div class="discount-circle" *ngIf="features.personalizedOffers">
+                        <span class="exclusive-text">Exclusive</span>
+                        <h2>15%</h2>
+                        <p>Discount For You</p>
+                        <button class="discount-code">BUYNOW15</button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Rewards Section -->
+                  <div class="rewards-panel" *ngIf="features.loyalty">
+                    <div class="rewards-left">
+                      <img src="assets/images/gold crown.png" alt="Crown" class="rewards-icon" />
+                      <div>
+                        <img src="assets/images/goldrewards.png" alt="loyalty rewards" class="sorrento-rewards" />
+                        <img src="assets/images/goldgroup.png" alt="groupicon" class="group-icon" />
+                      </div>
+                    </div>
+
+                    <div class="gold-rewards-right">
+                      <span class="points-pill">650</span>
+                      <p>
+                        Your points are worth
+                        <span class="highlight">$65</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="gold-product-wrapper">
+                    <p class="greetingtext">You have left this in your Cart!</p>
+                    <div class="product-card">
+                      <div class="product-image">
+                        <img src="assets/images/peanutbutter.png" alt="Peanut butter" />
+                        <div class="best-seller">
+                          <img src="assets/images/Vector.png" alt="vector fire icon" />
+                          <span>Best Seller</span>
+                        </div>
+                      </div>
+
+                      <!-- Product Details -->
+                      <div class="product-details">
+                        <h2 class="product-title">Natural Crunchy Peanut Butter</h2>
+
+                        <div class="recent-purchases">
+                          <img src="assets/images/up-arrow.png" alt="arrow" />
+                          <span>86 People Bought Recently</span>
+                        </div>
+                        <hr />
+
+                        <div class="reviews">
+                          <span class="rating">4.9</span>
+                          <img src="assets/images/star.png" alt="star" />
+                          <span class="separator">|</span>
+                          <span class="review-count">318 Reviews</span>
+                        </div>
+
+                        <div class="price-stock">
+                          <span class="price">$10.99</span>
+                          <span class="stock">12 available</span>
+                        </div>
+
+                        <button class="buy-now" [class.clicked]="isClicked" (click)="isClicked = !isClicked">
+                          Buy Now
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                
+
+                <!-- Our Recommendation Section -->
+                <div class="gold-recommendation-wrapper" *ngIf="features.productRecommendations">
+                  <div class="gold-recommendations">
+                    <h2 class="recommend-title">Our Recommendation</h2>
+
+                    <!-- First Product -->
+                    <div class="recommend-card">
+                      <div class="recommend-image">
+                        <img src="assets/images/cocoapowder.png" alt="Cocoa powder" />
+                      </div>
+                      <div class="recommend-details">
+                        <h3 class="product-name">Unsweetened Cocoa Powder</h3>
+                        <p class="rating">
+                          4.7
+                          <span class="star">★</span>
+                          | 210 Ratings
+                        </p>
+                        <hr />
+                        <p class="price">$5.99</p>
+                        <p class="tax-text">Inclusive of all taxes</p>
+                        <button class="buy-btn">Buy Now</button>
+                      </div>
+                    </div>
+
+                    <!-- Second Product -->
+                    <div class="recommend-card">
+                      <div class="recommend-image">
+                        <img src="assets/images/Oats.jpg" alt="Oats" />
+                      </div>
+                      <div class="recommend-details">
+                        <h3 class="product-name"> High Protein Instant Oats</h3>
+                        <p class="rating">
+                          4.1
+                          <span class="star">★</span>
+                          | 116 Ratings
+                        </p>
+                        <hr />
+                        <p class="price">$2.99</p>
+                        <p class="tax-text">Inclusive of all taxes</p>
+                        <button class="buy-btn">Buy Now</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Locate Us Section -->
+                <div class="store-locate" *ngIf="features.location && zipCode != ''">
+                  <div class="store-info">
+                    <div class="store-header">
+                      <img src="assets/images/store-icon.png" alt="Store Icon" class="icon" />
+                      <p>
+                        Checkout our store at
+                        <br />
+                        <span class="highlight">{{ city }}</span>
+                        <br />
+                        near you
+                      </p>
+                    </div>
+                    <div class="store-address">
+                      <img src="assets/images/location-icon.png" alt="Location Icon" class="icon" />
+                      <p>{{ state }}</p>
+                    </div>
+                  </div>
+
+                  <div class="store-map">
+                    <iframe
+                      [src]="mapUrl | safeUrl"
+                      width="100%"
+                      height="300"
+                      style="border: 0"
+                      allowfullscreen
+                      loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade"></iframe>
+                  </div>
+                </div>
+                <!-- CLOSE store-locate here -->
+
+                <!-- White Banner -->
+                <div class="white-banner">
+                  <div class="inner">
+                    <div class="sorrento-logo">
+                      <img src="assets/images/sorrento.png" alt="sorrento" class="icon" />
+                    </div>
+                    <div class="banner-social">
+                      <span>Follow us on</span>
+                      <a href="#"><img src="assets/images/twitter-alt.png" alt="X" /></a>
+                      <a href="#"><img src="assets/images/facebook.png" alt="Facebook" /></a>
+                      <a href="#"><img src="assets/images/instagram.png" alt="Facebook" /></a>
+                    </div>
+                    <div class="banner-unsubscribe">
+                      <a href="#">Unsubscribe</a>
+                    </div>
+                  </div>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="activeTab == 'whatsapp'" class="whatsapp-panel">
+          <div class="fashion-panel">
+            <div class="panel">
+              <div *ngIf="category === 'Fashion'" class="whatsapp-frame">
+                <!-- Background -->
+                <img src="assets/images/Whatsapp-background.png" alt="WhatsApp" class="whatsapp-image" />
+                <!-- WhatsApp Card -->
+                <div class="whatsapp-card">
+                  <div style="display: flex">
+                    <img src="assets/images/whatsappshoe.png" alt="grocery container" class="wa-product-img" />
+                    <div class="wa-product-details">
+                      <div class="wa-card">
+                        <p class="wa-greeting">
+                          Hi
+                          <span class="wa-username">
+                            <b>{{ name }}</b>
+                          </span>
+                          ,
+                        </p>
+
+                        <p class="wa-title">Radiant Koral Knit Sneakers</p>
+
+                        <p class="wa-rating">⭐ 4.9/319 reviews)</p>
+
+                        <p class="wa-price">Price: $319</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card-body">
+                    <div class="message">
+                      <!-- class="grocery-message" -->
+                      <p class="grocerymessage">
+                        Your cart misses you! 🛒
+                        <br />
+                        <br />
+                        Tailored elegance meets everyday comfort
+                        <br />
+                        perfect for layering, lounging, or turning
+                        <br />
+                        heads wherever you go.
+                        <br />
+                        <br />
+                        Complete your checkout before it’s gone
+                      </p>
+                    </div>
+
+                    <div class="price-time-header">
+                      <span class="time">08:05 am</span>
+                    </div>
+                    <hr />
+                    <div class="shopnowmessage">
+                      <img src="assets/images/shopicon.png" alt="shop icon" class="shop-image" />
+                      <p>Shop Now</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Carousel directly below container inside frame -->
+                <div class="carousel-container" *ngIf="features.aiStylist">
+                  <div class="container-frame" style="background-color: #fff">Explore Curated Styles Just for You</div>
+                  <!-- Wrapper with arrows -->
+                  <div class="carousel-wrapper">
+                    <!-- Left Arrow -->
+                    <button class="arrow left" (click)="scrollLeft()"></button>
+
+                    <!-- Scrollable carousel -->
+                    <div class="carousel" #carousel>
+                      <div class="card" *ngFor="let p of carouselProducts">
+                        <div class="badge" *ngIf="p.discount">{{ p.discount }}</div>
+                        <img [src]="p.img" alt="{{ p.title }}" />
+                        <!-- <div class="title">{{ p.title }}</div> -->
+                      </div>
+                    </div>
+
+                    <!-- Right Arrow -->
+                    <button class="arrow right" (click)="scrollRight()"></button>
+                  </div>
+                </div>
+              </div>
+              <div *ngIf="isGrocerySelected()" class="whatsapp-frame">
+                <!-- Background -->
+                <img src="assets/images/Whatsapp-background.png" alt="WhatsApp" class="whatsapp-image" />
+                <!-- WhatsApp Card -->
+                <div class="whatsapp-card">
+                  <div style="display: flex">
+                    <img src="assets/images/grocerycontainer.png" alt="grocery container" class="product-image" />
+                    <div class="groceryimg-content">
+                      <span class="groceryhi">Hi</span>
+                      <span class="groceryname">{{ name }},</span>
+                      <br />
+                      Natural Crunchy
+                      <br />
+                      Peanut Butter ⭐ 4.9/319 reviews)
+                      <br />
+                      <br />
+                      Price: $10.99
+                    </div>
+                  </div>
+
+                  <div class="card-body">
+                    <div class="message">
+                      <!-- class="grocery-message" -->
+                      <p class="grocerymessage">
+                        You have left this in your cart! 🛒
+                        <br />
+                        We have some amazing offers for you 🎉
+                      </p>
+                    </div>
+
+                    <div class="price-time-header">
+                      <span class="time">08:05 am</span>
+                    </div>
+                    <hr />
+                    <div class="shopnowmessage">
+                      <img src="assets/images/shopicon.png" alt="shop icon" class="shop-image" />
+                      <p>Buy Now</p>
+                    </div>
+                  </div>
+                </div>
+                <!-- Carousel directly below container inside frame -->
+                <div class="carousel-container" *ngIf="features.aiStylist">
+                  <div class="container-frame" style="background-color: #fff">
+                    Explore Curated Styles Just for You
+                    <div class="price-time-header">
+                      <span class="time">08:05 am</span>
+                    </div>
+                  </div>
+                  <div class="carousel-wrapper">
+                    <!-- Card 1 -->
+                    <div class="carousel-card">
+                      <img src="assets/images/whatsappcontent.png" class="carousel-img" alt="Bag" />
+                      <div class="carousel-caption"></div>
+                    </div>
+
+                    <!-- Add more cards if needed -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="activeTab == 'notification'" class="notification-panel">
+          <div class="fashion-panel">
+            <div *ngIf="category === 'Fashion'" class="notificationpanel">
+              <!-- First notification frame -->
+              <div class="notification-frame-1">
+                <img src="assets/images/Notificationbackground.png" alt="Notification" class="notification-image" />
+                <div class="notification-card">
+                  <div class="notification-header">
+                    <img src="assets/images/BusinessLogoPlaceholder.png" alt="Logo" class="logo" />
+                    <span class="brand">Sorrento</span>
+                    <span class="time">• now</span>
+                  </div>
+                  <div class="notification-body">
+                    <div class="text-block">
+                      <p class="title">Hi {{ name }}!</p>
+                      <p class="message">You've left this behind, checkout great offers</p>
+                    </div>
+                    <img src="assets/images/smallshoe.png" class="product-img" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Second notification frame -->
+              <div class="notification-frame-2">
+                <img src="assets/images/Notificationbackground.png" alt="Notification" class="notification-image" />
+                <div class="card">
+                  <div class="card-header">
+                    <img src="assets/images/BusinessLogoPlaceholder.png" alt="Sorrento Logo" class="logo" />
+                    <span class="brand">Sorrento</span>
+                    <span class="time">now</span>
+                  </div>
+
+                  <div class="card-body">
+                    <h3 class="greeting">Hi {{ name }}!</h3>
+                    <p class="message">You've left this behind, checkout great offers</p>
+                    <img src="assets/images/notificationshoe.png" alt="Product" class="product-image" />
+                  </div>
+
+                  <div class="card-footer">
+                    <button class="btn buy">Buy Now</button>
+                    <button class="btn explore">Explore Similar</button>
+                    <button class="btn share">Share</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="isGrocerySelected()" class="notificationpanel">
+              <!-- First notification frame -->
+              <div class="notification-frame-1">
+                <img src="assets/images/Notificationbackground.png" alt="Notification" class="notification-image" />
+                <!-- Notification Card -->
+                <div class="notification-card">
+                  <div class="notification-header">
+                    <img src="assets/images/BusinessLogoPlaceholder.png" alt="Logo" class="logo" />
+                    <span class="brand">Sorrento</span>
+                    <span class="time">• now</span>
+                  </div>
+                  <div class="notification-body">
+                    <div class="text-block">
+                      <p class="title">Hi {{ name }}!</p>
+                      <p class="message">You've left this behind, checkout great offers</p>
+                    </div>
+                    <img src="assets/images/grocerycontainer.png" class="product-img" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Second notification frame -->
+              <div class="notification-frame-2">
+                <img src="assets/images/Notificationbackground.png" alt="Notification" class="notification-image" />
+                <div class="card">
+                  <div class="card-header">
+                    <img src="assets/images/BusinessLogoPlaceholder.png" alt="Sorrento Logo" class="logo" />
+                    <span class="brand">Sorrento</span>
+                    <span class="time">now</span>
+                  </div>
+
+                  <div class="card-body">
+                    <h3 class="greeting">Hi {{ name }}!</h3>
+                    <p class="message">You have left this in your cart, checkout offers.</p>
+                    <div style="display: flex; height: 200px">
+                      <img src="assets/images/grocerycontainer.png" alt="grocery container" class="product-image" />
+                      <div class="groceryimg-content notification-content">
+                        <br />
+                        Natural Crunchy Peanut Butter
+                        <br />
+                        ⭐ 4.9/319 reviews)
+                        <br />
+                        <br />
+                        Price: $10.99
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card-footer">
+                    <button class="btn buy">Buy Now</button>
+                    <button class="btn explore">Explore Similar</button>
+                    <button class="btn share">Share</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="activeTab == 'smsRcs'" class="sms-rcs-panel">
+          <div class="panel">
+            <div *ngIf="isGrocerySelected()" class="whatsapp-frame">
+              <!-- Background -->
+              <img src="assets/images/Fashion - RCS.png" alt="WhatsApp" class="whatsapp-image" />
+              <!-- WhatsApp Card -->
+              <div class="sms-rcs-card">
+                <div style="display: flex">
+                  <img src="assets/images/grocerycontainer.png" alt="grocery container" class="product-image" />
+                  <div class="groceryimg-content">
+                    Hi {{ name || "" }},
+                    <br />
+                    <br />
+                    Natural Crunchy Peanut Butter
+                    <br />
+                    ⭐ 4.9/319 reviews
+                    <br />
+                    <br />
+                    Price: $10.99
+                  </div>
+                </div>
+
+                <div class="card-body">
+                  <div class="message">
+                    <!-- class="grocery-message" -->
+                    <p class="grocerymessage">
+                      You have left this in your cart! 🛒
+                      <br />
+                      We have some amazing offers for you 🎉
+                    </p>
+                  </div>
+                  <hr />
+                  <div class="shopnowmessage">
+                    <img src="assets/images/shopicon.png" alt="shop icon" class="shop-image" />
+                    <p>Shop Now</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Carousel directly below container inside frame -->
+              <div class="carousel-container" *ngIf="features.productRecommendations">
+                <div class="container-frame">Explore Our Recommendations</div>
+                <div class="carousel-wrapper">
+                  <!-- Card 1 -->
+                  <div class="carousel-card">
+                    <img src="assets/images/whatsappcontent.png" class="carousel-img" alt="Bag" />
+                    <div class="carousel-caption"></div>
+                  </div>
+
+                  <!-- Add more cards if needed -->
+                </div>
+              </div>
+            </div>
+            <div *ngIf="category === 'Fashion'" class="whatsapp-frame">
+              <!-- Background -->
+              <img src="assets/images/Fashion - RCS.png" alt="WhatsApp" class="whatsapp-image" />
+              <!-- WhatsApp Card -->
+              <div class="whatsapp-card">
+                <div style="display: flex">
+                  <img src="assets/images/whatsappshoe.png" alt="grocery container" class="wa-product-img" />
+                  <div class="wa-product-details">
+                    <div class="wa-card">
+                      <p class="wa-greeting">
+                        Hi
+                        <span class="wa-username">{{ name }}</span>
+                        ,
+                      </p>
+
+                      <p class="wa-title">Radiant Koral Knit Sneakers</p>
+
+                      <p class="wa-rating">⭐ 4.9/319 reviews)</p>
+
+                      <p class="wa-price">Price: $319</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-body">
+                  <div class="message">
+                    <!-- class="grocery-message" -->
+                    <p class="grocerymessage">
+                      Your cart misses you! 🛒
+                      <br />
+                      <br />
+                      Tailored elegance meets everyday comfort
+                      <br />
+                      perfect for layering, lounging, or turning
+                      <br />
+                      heads wherever you go.
+                      <br />
+                      <br />
+                      Complete your checkout before it’s gone
+                    </p>
+                  </div>
+
+                  <div class="price-time-header">
+                    <span class="time">08:05 am</span>
+                  </div>
+                  <hr />
+                  <div class="shopnowmessage shopnowmessage2">
+                    <img src="assets/images/shopicon2.png" alt="shop icon" class="shop-image" />
+                    <p>Shop Now</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Carousel directly below container inside frame -->
+              <div class="carousel-container" *ngIf="features.productRecommendations">
+                <div class="container-frame">Explore Our Recommendations</div>
+                <div class="carousel-wrapper">
+                  <!-- Card 1 -->
+                  <div class="carousel-card">
+                    <img src="assets/images/sms-rcs.png" class="carousel-img" alt="Bag" />
+                    <div class="carousel-caption"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="activeTab == 'sms'" class="sms-panel">
+          <div class="smspanel">
+            <div *ngIf="category === 'Fashion'" class="sms-frame">
+              <img src="assets/images/fashionsms.svg" alt="sms" class="sms-image" />
+              <div class="sms">
+                <div class="message-box">
+                  <p>
+                    Hi
+                    <strong>{{ name }}</strong>
+                    , you've left an amazing product in your cart, and we're giving you some amazing discounts on it.
+                    Check it out here
+                    <a href="https://shorturl.at/sorrento" target="_blank">https://shorturl.at/sorrento</a>
+                  </p>
+                </div>
+
+                <div class="timestamp">Friday, 9 December • 9.23 am</div>
+              </div>
+            </div>
+            <div *ngIf="isGrocerySelected()" class="sms-frame">
+              <img src="assets/images/fashionsms.svg" alt="sms" class="sms-image" />
+              <div class="sms">
+                <div class="message-box">
+                  <p>
+                    Hi
+                    <strong>{{ name }}</strong>
+                    , you've left an amazing product in your cart, and we're giving you some amazing discounts on it.
+                    Check it out here
+                    <a href="https://shorturl.at/sorrento" target="_blank">https://shorturl.at/sorrento</a>
+                  </p>
+                </div>
+
+                <div class="timestamp">Friday, 9 December • 9.23 am</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
