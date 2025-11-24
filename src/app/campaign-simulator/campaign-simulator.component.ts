@@ -79,7 +79,7 @@ export class CampaignSimulatorComponent {
     if (allFalse) {
       this.features = {
         loyalty: true,
-        location: this.zipCode == ''? false : true,
+        location: this.zipCode == "" ? false : true,
         personalizedOffers: true,
         productRecommendations: true,
         aiStylist: true,
@@ -103,7 +103,7 @@ export class CampaignSimulatorComponent {
     this.persona = formData.persona;
     this.category = formData.category;
     this.showPreviewPanel = true;
-    
+
     console.log("Form Data:", formData);
     // You can trigger your preview logic here as before
   }

@@ -1,9 +1,9 @@
 <div class="container-fluid simulator-container py-4">
- <div class="top-heading" [class.show-back]="showPreviewPanel">
-  <img src="assets/images/arrow.png" class="title-back-icon" (click)="showPreviewPanel = false" />
-  <h2 class="simulator-title">Campaign Simulator</h2>
-  <span></span>
-</div>
+  <div class="top-heading" [class.show-back]="showPreviewPanel">
+    <img src="assets/images/arrow.png" class="title-back-icon" (click)="showPreviewPanel = false" />
+    <h2 class="simulator-title">Campaign Simulator</h2>
+    <span></span>
+  </div>
 
   <div class="simulator-content row">
     <div class="col-md-3 left-panel mobile-form-container" [class.hidden]="showPreviewPanel">
@@ -11,14 +11,7 @@
         <!-- Name -->
         <div class="form-group">
           <label class="inline-label">Name</label>
-          <input
-            type="text"
-            name="name"
-            ngModel
-            #nameInput="ngModel"
-            class="form-control"
-            placeholder="Enter Name"
-             />
+          <input type="text" name="name" ngModel #nameInput="ngModel" class="form-control" placeholder="Enter Name" />
           <div
             *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched || campaignForm.submitted)"
             class="text-danger small">
@@ -36,7 +29,6 @@
             #emailInput="ngModel"
             pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
             class="form-control"
-            
             placeholder="Enter Email" />
           <div
             *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched || campaignForm.submitted)"
@@ -151,12 +143,10 @@
           </div>
           <button type="submit" class="generate-btn">Generate</button>
         </div>
-
-        
       </form>
     </div>
-<div class="col-md-9 rightPanel mobile-preview-container" [class.visible]="showPreviewPanel">  
-   <!-- Right Preview -->
+    <div class="col-md-9 rightPanel mobile-preview-container" [class.visible]="showPreviewPanel">
+      <!-- Right Preview -->
       <div class="preview-panel">
         <div class="nav nav-tabs">
           <li class="nav-item" *ngFor="let tab of tabs">
@@ -291,100 +281,100 @@
                     </div>
                   </div>
                 </div>
-             
-              <!-- Our Recommendation Section -->
-              <div class="recommendation-wrapper" *ngIf="features.productRecommendations">
-                <div class="recommendations">
-                  <h2 class="recommend-title">Our Recommendation</h2>
 
-                  <!-- First Product -->
-                  <div class="recommend-card">
-                    <div class="recommend-image">
-                      <img src="assets/images/blueshoe.png" alt="Luxe Tailored Blazer" />
+                <!-- Our Recommendation Section -->
+                <div class="recommendation-wrapper" *ngIf="features.productRecommendations">
+                  <div class="recommendations">
+                    <h2 class="recommend-title">Our Recommendation</h2>
+
+                    <!-- First Product -->
+                    <div class="recommend-card">
+                      <div class="recommend-image">
+                        <img src="assets/images/blueshoe.png" alt="Luxe Tailored Blazer" />
+                      </div>
+                      <div class="recommend-details">
+                        <h3 class="product-name">Aqua Dash Runner</h3>
+                        <p class="rating">
+                          4.7
+                          <span class="star">★</span>
+                          | 210 Ratings
+                        </p>
+                        <hr />
+                        <p class="price">$139.99</p>
+                        <p class="tax-text">Inclusive of all taxes</p>
+                        <button class="buy-btn">Buy Now</button>
+                      </div>
                     </div>
-                    <div class="recommend-details">
-                      <h3 class="product-name">Aqua Dash Runner</h3>
-                      <p class="rating">
-                        4.7
-                        <span class="star">★</span>
-                        | 210 Ratings
+
+                    <!-- Second Product -->
+                    <div class="recommend-card">
+                      <div class="recommend-image">
+                        <img src="assets/images/blackshoe.png" alt="Elegant Structured Blazer" />
+                      </div>
+                      <div class="recommend-details">
+                        <h3 class="product-name">Phantom Edge Trainer</h3>
+                        <p class="rating">
+                          4.1
+                          <span class="star">★</span>
+                          | 116 Ratings
+                        </p>
+                        <hr />
+                        <p class="price">$179.99</p>
+                        <p class="tax-text">Inclusive of all taxes</p>
+                        <button class="buy-btn">Buy Now</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Locate Us Section -->
+                <div class="store-locate" *ngIf="features.location && zipCode != ''">
+                  <div class="store-info">
+                    <div class="store-header">
+                      <img src="assets/images/store-icon.png" alt="Store Icon" class="icon" />
+                      <p>
+                        Checkout our store at
+                        <br />
+                        <span class="highlight">{{ city }}</span>
+                        <br />
+                        near you
                       </p>
-                      <hr />
-                      <p class="price">$139.99</p>
-                      <p class="tax-text">Inclusive of all taxes</p>
-                      <button class="buy-btn">Buy Now</button>
+                    </div>
+                    <div class="store-address">
+                      <img src="assets/images/location-icon.png" alt="Location Icon" class="icon" />
+                      <p>{{ state }}</p>
                     </div>
                   </div>
 
-                  <!-- Second Product -->
-                  <div class="recommend-card">
-                    <div class="recommend-image">
-                      <img src="assets/images/blackshoe.png" alt="Elegant Structured Blazer" />
-                    </div>
-                    <div class="recommend-details">
-                      <h3 class="product-name">Phantom Edge Trainer</h3>
-                      <p class="rating">
-                        4.1
-                        <span class="star">★</span>
-                        | 116 Ratings
-                      </p>
-                      <hr />
-                      <p class="price">$179.99</p>
-                      <p class="tax-text">Inclusive of all taxes</p>
-                      <button class="buy-btn">Buy Now</button>
-                    </div>
+                  <div class="store-map">
+                    <iframe
+                      [src]="mapUrl | safeUrl"
+                      width="100%"
+                      height="300"
+                      style="border: 0"
+                      allowfullscreen
+                      loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade"></iframe>
                   </div>
                 </div>
-              </div>
-              <!-- Locate Us Section -->
-              <div class="store-locate" *ngIf="features.location && zipCode != ''">
-                <div class="store-info">
-                  <div class="store-header">
-                    <img src="assets/images/store-icon.png" alt="Store Icon" class="icon" />
-                    <p>
-                      Checkout our store at
-                      <br />
-                      <span class="highlight">{{ city }}</span>
-                      <br />
-                      near you
-                    </p>
-                  </div>
-                  <div class="store-address">
-                    <img src="assets/images/location-icon.png" alt="Location Icon" class="icon" />
-                    <p>{{ state }}</p>
-                  </div>
-                </div>
+                <!-- CLOSE store-locate here -->
 
-                <div class="store-map">
-                  <iframe
-                    [src]="mapUrl | safeUrl"
-                    width="100%"
-                    height="300"
-                    style="border: 0"
-                    allowfullscreen
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
-              </div>
-              <!-- CLOSE store-locate here -->
-
-              <!-- White Banner -->
-              <div class="white-banner">
-                <div class="inner">
-                  <div class="sorrento-logo">
-                    <img src="assets/images/sorrento.png" alt="sorrento" class="icon" />
-                  </div>
-                  <div class="banner-social">
-                    <span>Follow us on</span>
-                    <a href="#"><img src="assets/images/twitter-alt.png" alt="X" /></a>
-                    <a href="#"><img src="assets/images/facebook.png" alt="Facebook" /></a>
-                    <a href="#"><img src="assets/images/instagram.png" alt="Facebook" /></a>
-                  </div>
-                  <div class="banner-unsubscribe">
-                    <a href="#">Unsubscribe</a>
+                <!-- White Banner -->
+                <div class="white-banner">
+                  <div class="inner">
+                    <div class="sorrento-logo">
+                      <img src="assets/images/sorrento.png" alt="sorrento" class="icon" />
+                    </div>
+                    <div class="banner-social">
+                      <span>Follow us on</span>
+                      <a href="#"><img src="assets/images/twitter-alt.png" alt="X" /></a>
+                      <a href="#"><img src="assets/images/facebook.png" alt="Facebook" /></a>
+                      <a href="#"><img src="assets/images/instagram.png" alt="Facebook" /></a>
+                    </div>
+                    <div class="banner-unsubscribe">
+                      <a href="#">Unsubscribe</a>
+                    </div>
                   </div>
                 </div>
-              </div>
               </div>
             </div>
 
@@ -489,104 +479,103 @@
                     </div>
                   </div>
                 </div>
-              
 
-              <!-- Our Recommendation Section -->
-              <div class="gold-recommendation-wrapper" *ngIf="features.productRecommendations">
-                <div class="gold-recommendations">
-                  <h2 class="recommend-title">Our Recommendation</h2>
+                <!-- Our Recommendation Section -->
+                <div class="gold-recommendation-wrapper" *ngIf="features.productRecommendations">
+                  <div class="gold-recommendations">
+                    <h2 class="recommend-title">Our Recommendation</h2>
 
-                  <!-- First Product -->
-                  <div class="recommend-card">
-                    <div class="recommend-image">
-                      <img src="assets/images/cocoapowder.png" alt="Cocoa powder" />
+                    <!-- First Product -->
+                    <div class="recommend-card">
+                      <div class="recommend-image">
+                        <img src="assets/images/cocoapowder.png" alt="Cocoa powder" />
+                      </div>
+                      <div class="recommend-details">
+                        <h3 class="product-name">Unsweetened Cocoa Powder</h3>
+                        <p class="rating">
+                          4.7
+                          <span class="star">★</span>
+                          | 210 Ratings
+                        </p>
+                        <hr />
+                        <br />
+                        <p class="price">$5.99</p>
+                        <p class="tax-text">Inclusive of all taxes</p>
+                        <button class="buy-btn">Buy Now</button>
+                      </div>
                     </div>
-                    <div class="recommend-details">
-                      <h3 class="product-name">Unsweetened Cocoa Powder</h3>
-                      <p class="rating">
-                        4.7
-                        <span class="star">★</span>
-                        | 210 Ratings
+
+                    <!-- Second Product -->
+                    <div class="recommend-card">
+                      <div class="recommend-image">
+                        <img src="assets/images/Oats.jpg" alt="Oats" />
+                      </div>
+                      <div class="recommend-details">
+                        <h3 class="product-name"> High Protein Instant Oats</h3>
+                        <p class="rating">
+                          4.1
+                          <span class="star">★</span>
+                          | 116 Ratings
+                        </p>
+                        <hr />
+                        <br />
+                        <p class="price">$2.99</p>
+                        <p class="tax-text">Inclusive of all taxes</p>
+                        <button class="buy-btn">Buy Now</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Locate Us Section -->
+                <div class="store-locate" *ngIf="features.location && zipCode != ''">
+                  <div class="store-info">
+                    <div class="store-header">
+                      <img src="assets/images/store-icon.png" alt="Store Icon" class="icon" />
+                      <p>
+                        Checkout our store at
+                        <br />
+                        <span class="highlight">{{ city }}</span>
+                        <br />
+                        near you
                       </p>
-                      <hr />
-                      <br />
-                      <p class="price">$5.99</p>
-                      <p class="tax-text">Inclusive of all taxes</p>
-                      <button class="buy-btn">Buy Now</button>
+                    </div>
+                    <div class="store-address">
+                      <img src="assets/images/location-icon.png" alt="Location Icon" class="icon" />
+                      <p>{{ state }}</p>
                     </div>
                   </div>
 
-                  <!-- Second Product -->
-                  <div class="recommend-card">
-                    <div class="recommend-image">
-                      <img src="assets/images/Oats.jpg" alt="Oats" />
+                  <div class="store-map">
+                    <iframe
+                      [src]="mapUrl | safeUrl"
+                      width="100%"
+                      height="300"
+                      style="border: 0"
+                      allowfullscreen
+                      loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade"></iframe>
+                  </div>
+                </div>
+                <!-- CLOSE store-locate here -->
+
+                <!-- White Banner -->
+                <div class="white-banner">
+                  <div class="inner">
+                    <div class="sorrento-logo">
+                      <img src="assets/images/sorrento.png" alt="sorrento" class="icon" />
                     </div>
-                    <div class="recommend-details">
-                      <h3 class="product-name"> High Protein Instant Oats</h3>
-                      <p class="rating">
-                        4.1
-                        <span class="star">★</span>
-                        | 116 Ratings
-                      </p>
-                      <hr />
-                      <br />
-                      <p class="price">$2.99</p>
-                      <p class="tax-text">Inclusive of all taxes</p>
-                      <button class="buy-btn">Buy Now</button>
+                    <div class="banner-social">
+                      <span>Follow us on</span>
+                      <a href="#"><img src="assets/images/twitter-alt.png" alt="X" /></a>
+                      <a href="#"><img src="assets/images/facebook.png" alt="Facebook" /></a>
+                      <a href="#"><img src="assets/images/instagram.png" alt="Facebook" /></a>
+                    </div>
+                    <div class="banner-unsubscribe">
+                      <a href="#">Unsubscribe</a>
                     </div>
                   </div>
                 </div>
               </div>
-              <!-- Locate Us Section -->
-              <div class="store-locate" *ngIf="features.location && zipCode != ''">
-                <div class="store-info">
-                  <div class="store-header">
-                    <img src="assets/images/store-icon.png" alt="Store Icon" class="icon" />
-                    <p>
-                      Checkout our store at
-                      <br />
-                      <span class="highlight">{{ city }}</span>
-                      <br />
-                      near you
-                    </p>
-                  </div>
-                  <div class="store-address">
-                    <img src="assets/images/location-icon.png" alt="Location Icon" class="icon" />
-                    <p>{{ state }}</p>
-                  </div>
-                </div>
-
-                <div class="store-map">
-                  <iframe
-                    [src]="mapUrl | safeUrl"
-                    width="100%"
-                    height="300"
-                    style="border: 0"
-                    allowfullscreen
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
-              </div>
-              <!-- CLOSE store-locate here -->
-
-              <!-- White Banner -->
-              <div class="white-banner">
-                <div class="inner">
-                  <div class="sorrento-logo">
-                    <img src="assets/images/sorrento.png" alt="sorrento" class="icon" />
-                  </div>
-                  <div class="banner-social">
-                    <span>Follow us on</span>
-                    <a href="#"><img src="assets/images/twitter-alt.png" alt="X" /></a>
-                    <a href="#"><img src="assets/images/facebook.png" alt="Facebook" /></a>
-                    <a href="#"><img src="assets/images/instagram.png" alt="Facebook" /></a>
-                  </div>
-                  <div class="banner-unsubscribe">
-                    <a href="#">Unsubscribe</a>
-                  </div>
-                </div>
-              </div>
-            </div>
             </div>
           </div>
 
@@ -701,100 +690,100 @@
                     </div>
                   </div>
                 </div>
-              
-              <!-- Our Recommendation Section -->
-              <div class="recommendation-wrapper" *ngIf="features.productRecommendations">
-                <div class="recommendations">
-                  <h2 class="recommend-title">Our Recommendation</h2>
 
-                  <!-- First Product -->
-                  <div class="recommend-card">
-                    <div class="recommend-image">
-                      <img src="assets/images/blueshoe.png" alt="Luxe Tailored Blazer" />
+                <!-- Our Recommendation Section -->
+                <div class="recommendation-wrapper" *ngIf="features.productRecommendations">
+                  <div class="recommendations">
+                    <h2 class="recommend-title">Our Recommendation</h2>
+
+                    <!-- First Product -->
+                    <div class="recommend-card">
+                      <div class="recommend-image">
+                        <img src="assets/images/blueshoe.png" alt="Luxe Tailored Blazer" />
+                      </div>
+                      <div class="recommend-details">
+                        <h3 class="product-name">Aqua Dash Runner</h3>
+                        <p class="rating">
+                          4.7
+                          <span class="star">★</span>
+                          | 210 Ratings
+                        </p>
+                        <hr />
+                        <p class="price">$139.99</p>
+                        <p class="tax-text">Inclusive of all taxes</p>
+                        <button class="buy-btn">Buy Now</button>
+                      </div>
                     </div>
-                    <div class="recommend-details">
-                      <h3 class="product-name">Aqua Dash Runner</h3>
-                      <p class="rating">
-                        4.7
-                        <span class="star">★</span>
-                        | 210 Ratings
+
+                    <!-- Second Product -->
+                    <div class="recommend-card">
+                      <div class="recommend-image">
+                        <img src="assets/images/blackshoe.png" alt="Elegant Structured Blazer" />
+                      </div>
+                      <div class="recommend-details">
+                        <h3 class="product-name">Phantom Edge Trainer</h3>
+                        <p class="rating">
+                          4.1
+                          <span class="star">★</span>
+                          | 116 Ratings
+                        </p>
+                        <hr />
+                        <p class="price">$179.99</p>
+                        <p class="tax-text">Inclusive of all taxes</p>
+                        <button class="buy-btn">Buy Now</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Locate Us Section -->
+                <div class="store-locate" *ngIf="features.location && zipCode != ''">
+                  <div class="store-info">
+                    <div class="store-header">
+                      <img src="assets/images/store-icon.png" alt="Store Icon" class="icon" />
+                      <p>
+                        Checkout our store at
+                        <br />
+                        <span class="highlight">{{ city }}</span>
+                        <br />
+                        near you
                       </p>
-                      <hr />
-                      <p class="price">$139.99</p>
-                      <p class="tax-text">Inclusive of all taxes</p>
-                      <button class="buy-btn">Buy Now</button>
+                    </div>
+                    <div class="store-address">
+                      <img src="assets/images/location-icon.png" alt="Location Icon" class="icon" />
+                      <p>{{ state }}</p>
                     </div>
                   </div>
 
-                  <!-- Second Product -->
-                  <div class="recommend-card">
-                    <div class="recommend-image">
-                      <img src="assets/images/blackshoe.png" alt="Elegant Structured Blazer" />
-                    </div>
-                    <div class="recommend-details">
-                      <h3 class="product-name">Phantom Edge Trainer</h3>
-                      <p class="rating">
-                        4.1
-                        <span class="star">★</span>
-                        | 116 Ratings
-                      </p>
-                      <hr />
-                      <p class="price">$179.99</p>
-                      <p class="tax-text">Inclusive of all taxes</p>
-                      <button class="buy-btn">Buy Now</button>
-                    </div>
+                  <div class="store-map">
+                    <iframe
+                      [src]="mapUrl | safeUrl"
+                      width="100%"
+                      height="300"
+                      style="border: 0"
+                      allowfullscreen
+                      loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade"></iframe>
                   </div>
                 </div>
-              </div>
-              <!-- Locate Us Section -->
-              <div class="store-locate" *ngIf="features.location && zipCode != ''">
-                <div class="store-info">
-                  <div class="store-header">
-                    <img src="assets/images/store-icon.png" alt="Store Icon" class="icon" />
-                    <p>
-                      Checkout our store at
-                      <br />
-                      <span class="highlight">{{ city }}</span>
-                      <br />
-                      near you
-                    </p>
-                  </div>
-                  <div class="store-address">
-                    <img src="assets/images/location-icon.png" alt="Location Icon" class="icon" />
-                    <p>{{ state }}</p>
-                  </div>
-                </div>
+                <!-- CLOSE store-locate here -->
 
-                <div class="store-map">
-                  <iframe
-                    [src]="mapUrl | safeUrl"
-                    width="100%"
-                    height="300"
-                    style="border: 0"
-                    allowfullscreen
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
-              </div>
-              <!-- CLOSE store-locate here -->
-
-              <!-- White Banner -->
-              <div class="white-banner">
-                <div class="inner">
-                  <div class="sorrento-logo">
-                    <img src="assets/images/sorrento.png" alt="sorrento" class="icon" />
-                  </div>
-                  <div class="banner-social">
-                    <span>Follow us on</span>
-                    <a href="#"><img src="assets/images/twitter-alt.png" alt="X" /></a>
-                    <a href="#"><img src="assets/images/facebook.png" alt="Facebook" /></a>
-                    <a href="#"><img src="assets/images/instagram.png" alt="Facebook" /></a>
-                  </div>
-                  <div class="banner-unsubscribe">
-                    <a href="#">Unsubscribe</a>
+                <!-- White Banner -->
+                <div class="white-banner">
+                  <div class="inner">
+                    <div class="sorrento-logo">
+                      <img src="assets/images/sorrento.png" alt="sorrento" class="icon" />
+                    </div>
+                    <div class="banner-social">
+                      <span>Follow us on</span>
+                      <a href="#"><img src="assets/images/twitter-alt.png" alt="X" /></a>
+                      <a href="#"><img src="assets/images/facebook.png" alt="Facebook" /></a>
+                      <a href="#"><img src="assets/images/instagram.png" alt="Facebook" /></a>
+                    </div>
+                    <div class="banner-unsubscribe">
+                      <a href="#">Unsubscribe</a>
+                    </div>
                   </div>
                 </div>
-              </div>
               </div>
             </div>
             <!--END OF GOLD FASHION Section -->
@@ -896,101 +885,100 @@
                       </div>
                     </div>
                   </div>
-                
 
-                <!-- Our Recommendation Section -->
-                <div class="gold-recommendation-wrapper" *ngIf="features.productRecommendations">
-                  <div class="gold-recommendations">
-                    <h2 class="recommend-title">Our Recommendation</h2>
+                  <!-- Our Recommendation Section -->
+                  <div class="gold-recommendation-wrapper" *ngIf="features.productRecommendations">
+                    <div class="gold-recommendations">
+                      <h2 class="recommend-title">Our Recommendation</h2>
 
-                    <!-- First Product -->
-                    <div class="recommend-card">
-                      <div class="recommend-image">
-                        <img src="assets/images/cocoapowder.png" alt="Cocoa powder" />
+                      <!-- First Product -->
+                      <div class="recommend-card">
+                        <div class="recommend-image">
+                          <img src="assets/images/cocoapowder.png" alt="Cocoa powder" />
+                        </div>
+                        <div class="recommend-details">
+                          <h3 class="product-name">Unsweetened Cocoa Powder</h3>
+                          <p class="rating">
+                            4.7
+                            <span class="star">★</span>
+                            | 210 Ratings
+                          </p>
+                          <hr />
+                          <p class="price">$5.99</p>
+                          <p class="tax-text">Inclusive of all taxes</p>
+                          <button class="buy-btn">Buy Now</button>
+                        </div>
                       </div>
-                      <div class="recommend-details">
-                        <h3 class="product-name">Unsweetened Cocoa Powder</h3>
-                        <p class="rating">
-                          4.7
-                          <span class="star">★</span>
-                          | 210 Ratings
+
+                      <!-- Second Product -->
+                      <div class="recommend-card">
+                        <div class="recommend-image">
+                          <img src="assets/images/Oats.jpg" alt="Oats" />
+                        </div>
+                        <div class="recommend-details">
+                          <h3 class="product-name"> High Protein Instant Oats</h3>
+                          <p class="rating">
+                            4.1
+                            <span class="star">★</span>
+                            | 116 Ratings
+                          </p>
+                          <hr />
+                          <p class="price">$2.99</p>
+                          <p class="tax-text">Inclusive of all taxes</p>
+                          <button class="buy-btn">Buy Now</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Locate Us Section -->
+                  <div class="store-locate" *ngIf="features.location && zipCode != ''">
+                    <div class="store-info">
+                      <div class="store-header">
+                        <img src="assets/images/store-icon.png" alt="Store Icon" class="icon" />
+                        <p>
+                          Checkout our store at
+                          <br />
+                          <span class="highlight">{{ city }}</span>
+                          <br />
+                          near you
                         </p>
-                        <hr />
-                        <p class="price">$5.99</p>
-                        <p class="tax-text">Inclusive of all taxes</p>
-                        <button class="buy-btn">Buy Now</button>
+                      </div>
+                      <div class="store-address">
+                        <img src="assets/images/location-icon.png" alt="Location Icon" class="icon" />
+                        <p>{{ state }}</p>
                       </div>
                     </div>
 
-                    <!-- Second Product -->
-                    <div class="recommend-card">
-                      <div class="recommend-image">
-                        <img src="assets/images/Oats.jpg" alt="Oats" />
-                      </div>
-                      <div class="recommend-details">
-                        <h3 class="product-name"> High Protein Instant Oats</h3>
-                        <p class="rating">
-                          4.1
-                          <span class="star">★</span>
-                          | 116 Ratings
-                        </p>
-                        <hr />
-                        <p class="price">$2.99</p>
-                        <p class="tax-text">Inclusive of all taxes</p>
-                        <button class="buy-btn">Buy Now</button>
-                      </div>
+                    <div class="store-map">
+                      <iframe
+                        [src]="mapUrl | safeUrl"
+                        width="100%"
+                        height="300"
+                        style="border: 0"
+                        allowfullscreen
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                   </div>
-                </div>
-                <!-- Locate Us Section -->
-                <div class="store-locate" *ngIf="features.location && zipCode != ''">
-                  <div class="store-info">
-                    <div class="store-header">
-                      <img src="assets/images/store-icon.png" alt="Store Icon" class="icon" />
-                      <p>
-                        Checkout our store at
-                        <br />
-                        <span class="highlight">{{ city }}</span>
-                        <br />
-                        near you
-                      </p>
-                    </div>
-                    <div class="store-address">
-                      <img src="assets/images/location-icon.png" alt="Location Icon" class="icon" />
-                      <p>{{ state }}</p>
-                    </div>
-                  </div>
+                  <!-- CLOSE store-locate here -->
 
-                  <div class="store-map">
-                    <iframe
-                      [src]="mapUrl | safeUrl"
-                      width="100%"
-                      height="300"
-                      style="border: 0"
-                      allowfullscreen
-                      loading="lazy"
-                      referrerpolicy="no-referrer-when-downgrade"></iframe>
-                  </div>
-                </div>
-                <!-- CLOSE store-locate here -->
-
-                <!-- White Banner -->
-                <div class="white-banner">
-                  <div class="inner">
-                    <div class="sorrento-logo">
-                      <img src="assets/images/sorrento.png" alt="sorrento" class="icon" />
-                    </div>
-                    <div class="banner-social">
-                      <span>Follow us on</span>
-                      <a href="#"><img src="assets/images/twitter-alt.png" alt="X" /></a>
-                      <a href="#"><img src="assets/images/facebook.png" alt="Facebook" /></a>
-                      <a href="#"><img src="assets/images/instagram.png" alt="Facebook" /></a>
-                    </div>
-                    <div class="banner-unsubscribe">
-                      <a href="#">Unsubscribe</a>
+                  <!-- White Banner -->
+                  <div class="white-banner">
+                    <div class="inner">
+                      <div class="sorrento-logo">
+                        <img src="assets/images/sorrento.png" alt="sorrento" class="icon" />
+                      </div>
+                      <div class="banner-social">
+                        <span>Follow us on</span>
+                        <a href="#"><img src="assets/images/twitter-alt.png" alt="X" /></a>
+                        <a href="#"><img src="assets/images/facebook.png" alt="Facebook" /></a>
+                        <a href="#"><img src="assets/images/instagram.png" alt="Facebook" /></a>
+                      </div>
+                      <div class="banner-unsubscribe">
+                        <a href="#">Unsubscribe</a>
+                      </div>
                     </div>
                   </div>
-                </div>
                 </div>
               </div>
             </div>
