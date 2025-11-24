@@ -11,7 +11,7 @@
         <!-- Name -->
         <div class="form-group">
           <label class="inline-label">Name</label>
-          <input type="text" name="name" ngModel #nameInput="ngModel" class="form-control" placeholder="Enter Name" />
+          <input type="text" name="name" ngModel #nameInput="ngModel" class="form-control" placeholder="Enter Name" required />
           <div
             *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched || campaignForm.submitted)"
             class="text-danger small">
@@ -29,7 +29,8 @@
             #emailInput="ngModel"
             pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
             class="form-control"
-            placeholder="Enter Email" />
+            placeholder="Enter Email" 
+            required />
           <div
             *ngIf="emailInput.invalid && (emailInput.dirty || emailInput.touched || campaignForm.submitted)"
             class="text-danger small">
